@@ -1,12 +1,13 @@
-name: Medical Automation
+name: Auto Medical Content Generator
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # هر روز ۸ صبح
-  workflow_dispatch:       # اجرای دستی
+    # هر روز ساعت ۸ صبح به وقت ایران
+    - cron: '0 4 * * *'  # ۸ صبح ایران = ۴ بامداد UTC
+  workflow_dispatch:  # اجرای دستی هم امکان‌پذیر باشد
 
 jobs:
-  medical-research:
+  generate-content:
     runs-on: ubuntu-latest
     
     steps:
@@ -21,8 +22,15 @@ jobs:
     - name: Install dependencies
       run: pip install requests beautifulsoup4 pandas
       
-    - name: Run Medical Bot
+    - name: Generate daily medical content
       run: python medical_bot.py
       
-    - name: Complete
-      run: echo "✅ اتوماسیون کامل شد!"
+    - name: Upload generated articles
+      uses: actions/upload-artifact@v3
+      with:
+        name: medical-articles
+        path: auto_articles_*.json
+        retention-days: 7
+        
+    - name: Show completion message
+      run: echo "✅ تولید خودکار محتوای پزشکی کامل شد!"
