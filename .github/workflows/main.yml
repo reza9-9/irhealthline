@@ -1,18 +1,17 @@
-name: Auto Medical Content Generator
+name: Auto Medical Content Generator Pro
 
 on:
   schedule:
-    # هر روز ساعت ۸ صبح به وقت ایران
-    - cron: '0 4 * * *'  # ۸ صبح ایران = ۴ بامداد UTC
-  workflow_dispatch:  # اجرای دستی هم امکان‌پذیر باشد
+    - cron: '0 4 * * *'  # هر روز ۸ صبح ایران
+  workflow_dispatch:
 
 jobs:
-  generate-content:
+  generate-and-publish:
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -20,17 +19,35 @@ jobs:
         python-version: '3.9'
         
     - name: Install dependencies
-      run: pip install requests beautifulsoup4 pandas
+      run: |
+        pip install requests beautifulsoup4 pandas
+        python -c "import sqlite3; print('✅ SQLite آماده است')"
       
-    - name: Generate daily medical content
+    - name: Generate medical content
       run: python medical_bot.py
       
-    - name: Upload generated articles
+    - name: Initialize database
+      run: python -c "
+from database_handler import MedicalDatabase
+db = MedicalDatabase()
+print('✅ دیتابیس راه‌اندازی شد')
+"
+      
+    - name: Generate dashboard
+      run: python dashboard.py
+      
+    - name: Upload results
       uses: actions/upload-artifact@v4
       with:
-        name: medical-articles
-        path: auto_articles_*.json
-        retention-days: 7
+        name: medical-content-results
+        path: |
+          medical_content.db
+          index.html
+          auto_articles_*.json
+        retention-days: 30
         
     - name: Show completion message
-      run: echo "✅ تولید خودکار محتوای پزشکی کامل شد!"
+      run: |
+        echo '🎉 تولید خودکار محتوای پزشکی کامل شد!'
+        echo '📊 داشبورد در فایل index.html ایجاد شد'
+        echo '🗄️ داده‌ها در medical_content.db ذخیره شد'
