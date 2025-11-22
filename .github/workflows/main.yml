@@ -21,17 +21,10 @@ jobs:
     - name: Install dependencies
       run: |
         pip install requests beautifulsoup4 pandas
-        python -c "import sqlite3; print('✅ SQLite آماده است')"
+        echo "✅ وابستگی‌ها نصب شد"
       
-    - name: Generate medical content
+    - name: Run medical bot
       run: python medical_bot.py
-      
-    - name: Initialize database
-      run: python -c "
-from database_handler import MedicalDatabase
-db = MedicalDatabase()
-print('✅ دیتابیس راه‌اندازی شد')
-"
       
     - name: Generate dashboard
       run: python dashboard.py
@@ -46,8 +39,8 @@ print('✅ دیتابیس راه‌اندازی شد')
           auto_articles_*.json
         retention-days: 30
         
-    - name: Show completion message
+    - name: Show success message
       run: |
-        echo '🎉 تولید خودکار محتوای پزشکی کامل شد!'
-        echo '📊 داشبورد در فایل index.html ایجاد شد'
-        echo '🗄️ داده‌ها در medical_content.db ذخیره شد'
+        echo "🎉 سیستم با موفقیت اجرا شد!"
+        echo "📊 داشبورد: index.html"
+        echo "🗄️ دیتابیس: medical_content.db"
