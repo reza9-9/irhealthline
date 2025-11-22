@@ -4,12 +4,14 @@ import json
 from datetime import datetime
 import random
 import time
+import os
+from database_handler import MedicalDatabase  # اضافه کردن این خط
 
 class AutoMedicalContentBot:
     def __init__(self):
         self.generated_articles = []
         
-    # لیست کامل موضوعات خودکار
+    # لیست کامل موضوعات خودکار (همان کد قبلی)
     AUTO_TOPICS = {
         "دیابت و متابولیک": [
             "درمان دیابت نوع ۲", "کنترل قند خون", "رژیم دیابتی", 
@@ -178,6 +180,15 @@ def main():
     articles = bot.auto_generate_daily_content()
     
     if articles:
+        # 🆕 **ذخیره در دیتابیس - این بخش جدید است**
+        print("\n💾 در حال ذخیره در دیتابیس...")
+        try:
+            db = MedicalDatabase()
+            db.save_articles(articles)
+            print("✅ مقالات با موفقیت در دیتابیس ذخیره شد")
+        except Exception as e:
+            print(f"❌ خطا در ذخیره دیتابیس: {e}")
+        
         # ذخیره گزارش
         filename = bot.save_daily_report(articles)
         
