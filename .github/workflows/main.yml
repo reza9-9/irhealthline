@@ -2,7 +2,7 @@ name: Auto Medical Content Generator Pro
 
 on:
   schedule:
-    - cron: '0 4 * * *'  # هر روز ۸ صبح ایران
+    - cron: '0 4 * * *'  # هر روز ساعت ۸ صبح ایران
   workflow_dispatch:
 
 jobs:
