@@ -6,7 +6,8 @@ import random
 import time
 import os
 from database_handler import MedicalDatabase
-from website_poster import WebsiteAutoPoster  # اضافه کردن این خط
+from website_poster import WebsiteAutoPoster
+from analytics import MedicalAnalytics  # اضافه کردن این خط
 
 class AutoMedicalContentBot:
     def __init__(self):
@@ -202,10 +203,30 @@ def main():
         except Exception as e:
             print(f"❌ خطا در ارسال به وبسایت: {e}")
         
-        # 📄 ذخیره گزارش
+        # 📊 تولید داشبورد
+        print("\n📊 در حال تولید داشبورد...")
+        try:
+            from dashboard import MedicalDashboard
+            dashboard = MedicalDashboard()
+            dashboard.generate_html_dashboard()
+            print("✅ داشبورد با موفقیت تولید شد")
+        except Exception as e:
+            print(f"❌ خطا در تولید داشبورد: {e}")
+        
+        # 📈 تولید گزارش هفتگی
+        print("\n📈 در حال تولید گزارش‌های آنالیز...")
+        try:
+            analytics = MedicalAnalytics()
+            weekly_report = analytics.generate_weekly_report()
+            if weekly_report:
+                print("✅ گزارش‌های آنالیز با موفقیت تولید شد")
+        except Exception as e:
+            print(f"❌ خطا در تولید گزارش‌های آنالیز: {e}")
+        
+        # 📄 ذخیره گزارش روزانه
         filename = bot.save_daily_report(articles)
         
-        # 📊 نمایش خلاصه
+        # 📋 نمایش خلاصه
         bot.show_daily_summary(articles)
         
         print(f"\n💾 گزارش ذخیره شد: {filename}")
