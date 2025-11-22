@@ -1,0 +1,28 @@
+name: Medical Automation
+
+on:
+  schedule:
+    - cron: '0 8 * * *'  # هر روز ۸ صبح
+  workflow_dispatch:       # اجرای دستی
+
+jobs:
+  medical-research:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: pip install requests beautifulsoup4 pandas
+      
+    - name: Run Medical Bot
+      run: python medical_bot.py
+      
+    - name: Complete
+      run: echo "✅ اتوماسیون کامل شد!"
