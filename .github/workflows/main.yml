@@ -29,6 +29,9 @@ jobs:
     - name: Generate dashboard
       run: python dashboard.py
       
+    - name: Generate analytics reports
+      run: python analytics.py
+      
     - name: Upload results
       uses: actions/upload-artifact@v4
       with:
@@ -37,10 +40,13 @@ jobs:
           medical_content.db
           index.html
           auto_articles_*.json
+          weekly_report_*.json
         retention-days: 30
         
     - name: Show success message
       run: |
         echo "🎉 سیستم با موفقیت اجرا شد!"
         echo "📊 داشبورد: index.html"
+        echo "📈 گزارش هفتگی: weekly_report_*.json"
         echo "🗄️ دیتابیس: medical_content.db"
+        echo "📄 مقالات: auto_articles_*.json"
