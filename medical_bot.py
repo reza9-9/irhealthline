@@ -5,13 +5,14 @@ from datetime import datetime
 import random
 import time
 import os
-from database_handler import MedicalDatabase  # اضافه کردن این خط
+from database_handler import MedicalDatabase
+from website_poster import WebsiteAutoPoster  # اضافه کردن این خط
 
 class AutoMedicalContentBot:
     def __init__(self):
         self.generated_articles = []
         
-    # لیست کامل موضوعات خودکار (همان کد قبلی)
+    # لیست کامل موضوعات خودکار
     AUTO_TOPICS = {
         "دیابت و متابولیک": [
             "درمان دیابت نوع ۲", "کنترل قند خون", "رژیم دیابتی", 
@@ -180,7 +181,7 @@ def main():
     articles = bot.auto_generate_daily_content()
     
     if articles:
-        # 🆕 **ذخیره در دیتابیس - این بخش جدید است**
+        # 💾 ذخیره در دیتابیس
         print("\n💾 در حال ذخیره در دیتابیس...")
         try:
             db = MedicalDatabase()
@@ -189,10 +190,22 @@ def main():
         except Exception as e:
             print(f"❌ خطا در ذخیره دیتابیس: {e}")
         
-        # ذخیره گزارش
+        # 🌐 ارسال به وبسایت
+        print("\n🌐 در حال ارسال به وبسایت...")
+        try:
+            website = WebsiteAutoPoster()
+            website_results = website.post_multiple_articles(articles)
+            
+            # نمایش نتایج ارسال
+            success_count = sum(1 for r in website_results if r['success'])
+            print(f"✅ {success_count}/{len(articles)} مقاله به وبسایت ارسال شد")
+        except Exception as e:
+            print(f"❌ خطا در ارسال به وبسایت: {e}")
+        
+        # 📄 ذخیره گزارش
         filename = bot.save_daily_report(articles)
         
-        # نمایش خلاصه
+        # 📊 نمایش خلاصه
         bot.show_daily_summary(articles)
         
         print(f"\n💾 گزارش ذخیره شد: {filename}")
