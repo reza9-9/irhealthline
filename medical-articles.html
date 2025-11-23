@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>مقالات پزشکی تولید شده - IRHealthLine</title>
+    <style>
+        body { font-family: Tahoma; background: #f0f8ff; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #2c5aa0, #1e3a8a); color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px; text-align: center; }
+        .article { background: #f8f9fa; padding: 25px; margin: 20px 0; border-radius: 10px; border-right: 5px solid #2c5aa0; }
+        .article-title { color: #2c5aa0; font-size: 1.4em; margin-bottom: 15px; }
+        .article-meta { background: #e3f2fd; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9em; }
+        .article-content { line-height: 1.8; color: #333; font-size: 1.1em; }
+        .category { background: #2c5aa0; color: white; padding: 3px 12px; border-radius: 20px; font-size: 0.8em; }
+        .last-update { text-align: center; color: #666; margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 مقالات پزشکی تولید شده</h1>
+            <p>مقالات خودکار تولید شده توسط سیستم هوشمند IRHealthLine</p>
+            <p style="opacity: 0.9; font-size: 0.9em;">آپدیت روزانه - ساعت ۸ صبح</p>
+        </div>
+
+        <div id="articlesList">
+            <!-- مقالات اینجا نمایش داده می‌شوند -->
+            <div style="text-align: center; padding: 40px; color: #666;">
+                <p>🔄 در حال بارگذاری مقالات پزشکی...</p>
+            </div>
+        </div>
+
+        <div class="last-update">
+            آخرین بروزرسانی: <span id="updateTime">در حال بارگذاری...</span>
+        </div>
+    </div>
+
+    <script>
+        // تابع برای بارگذاری و نمایش مقالات
+        async function loadMedicalArticles() {
+            try {
+                console.log('🔍 در حال پیدا کردن آخرین مقالات...');
+                
+                // پیدا کردن آخرین فایل مقالات از GitHub
+                const response = await fetch('https://api.github.com/repos/reza9-9/irhealthline/contents/');
+                const files = await response.json();
+                
+                // فیلتر کردن فایل‌های مقالات
+                const articleFiles = files.filter(file => 
+                    file.name.startsWith('auto_articles_') && file.name.endsWith('.json')
+                ).sort((a, b) => b.name.localeCompare(a.name));
+                
+                if (articleFiles.length === 0) {
+                    document.getElementById('articlesList').innerHTML = 
+                        '<div style="text-align: center; padding: 40px; color: #666;">📭 هنوز مقاله‌ای تولید نشده است</div>';
+                    return;
+                }
+                
+                // بارگذاری آخرین فایل مقالات
+                const latestFile = articleFiles[0];
+                console.log('📄 بارگذاری فایل:', latestFile.name);
+                
+                const articleResponse = await fetch(latestFile.download_url);
+                const data = await articleResponse.json();
+                
+                // نمایش مقالات
+                displayArticles(data.articles);
+                
+                // نمایش تاریخ بروزرسانی
+                document.getElementById('updateTime').textContent = 
+                    new Date().toLocaleString('fa-IR');
+                    
+                console.log('✅ مقالات با موفقیت نمایش داده شدند');
+                
+            } catch (error) {
+                console.error('❌ خطا در بارگذاری مقالات:', error);
+                document.getElementById('articlesList').innerHTML = 
+                    '<div style="text-align: center; padding: 40px; color: red;">' +
+                    '❌ خطا در بارگذاری مقالات. لطفاً صفحه را رفرش کنید.' +
+                    '</div>';
+            }
+        }
+        
+        // تابع برای نمایش مقالات
+        function displayArticles(articles) {
+            const container = document.getElementById('articlesList');
+            
+            if (!articles || articles.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;">📭 مقاله‌ای برای نمایش وجود ندارد</div>';
+                return;
+            }
+            
+            let articlesHTML = '';
+            
+            articles.forEach((article, index) => {
+                articlesHTML += `
+                    <div class="article">
+                        <div class="article-title">${article.title}</div>
+                        <div class="article-meta">
+                            <strong>دسته‌بندی:</strong> <span class="category">${article.category}</span> | 
+                            <strong>زمان مطالعه:</strong> ${article.reading_time} | 
+                            <strong>تعداد کلمات:</strong> ${article.word_count} | 
+                            <strong>کیفیت:</strong> ${article.quality_score}/10
+                        </div>
+                        <div class="article-content">
+                            ${article.content}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = articlesHTML;
+        }
+        
+        // بارگذاری مقالات هنگام لود صفحه
+        document.addEventListener('DOMContentLoaded', loadMedicalArticles);
+        
+        // رفرش خودکار هر ۵ دقیقه
+        setInterval(loadMedicalArticles, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
