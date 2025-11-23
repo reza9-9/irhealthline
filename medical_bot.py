@@ -1,3 +1,4 @@
+from pubmed_bot import PubMedBot
 import requests
 from bs4 import BeautifulSoup
 import json
