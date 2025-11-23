@@ -78,10 +78,72 @@ class AutoMedicalContentBot:
         return selected_topics
     
     def generate_ai_content(self, topic):
-        """تولید محتوای با کیفیت‌تر"""
+        """تولید محتوای مبتنی بر PubMed"""
         print(f"🤖 در حال تولید محتوا برای: {topic}")
         
-        # templates پیشرفته‌تر و متنوع‌تر
+        # دیکشنری ترجمه موضوعات به انگلیسی
+        topic_translations = {
+            "درمان دیابت نوع ۲ با روش‌های نوین": "type 2 diabetes treatment innovations",
+            "کنترل قند خون در فصل سرما": "blood sugar control in cold weather",
+            "رژیم غذایی مناسب برای دیابتی‌ها": "diabetic diet recommendations",
+            "ورزش‌های مؤثر برای کاهش قند خون": "exercise for blood sugar reduction",
+            "عوارض بلندمدت دیابت و راه‌های پیشگیری": "diabetes long-term complications prevention",
+            "رژیم مدیترانه‌ای و فواید آن برای قلب": "mediterranean diet heart benefits",
+            "فستینگ متناوب و تأثیر بر متابولیسم": "intermittent fasting metabolism",
+            "رژیم کتوژنیک برای کاهش وزن": "ketogenic diet weight loss",
+            "شاخص گلایسمی و کنترل وزن": "glycemic index weight control",
+            "مکمل‌های غذایی ضروری برای سالمندان": "nutritional supplements elderly",
+            "درمان فشار خون با تغییر سبک زندگی": "hypertension lifestyle changes",
+            "کنترل کلسترول با تغذیه مناسب": "cholesterol control nutrition",
+            "ورزش‌های قلبی-عروقی برای سلامت قلب": "cardio exercise heart health",
+            "پیشگیری از سکته مغزی": "stroke prevention",
+            "رژیم غذایی مخصوص بیماران قلبی": "heart disease diet",
+            "درمان کبد چرب با روش‌های طبیعی": "fatty liver natural treatment",
+            "تغذیه مناسب برای سلامت دستگاه گوارش": "digestive health nutrition",
+            "پروبیوتیک‌ها و بهبود میکروبیوم روده": "probiotics gut microbiome",
+            "رژیم غذایی برای بهبود گوارش": "diet for digestion improvement",
+            "پاکسازی کبد با مواد غذایی طبیعی": "liver detox foods",
+            "تأثیر استرس بر سیستم ایمنی بدن": "stress immune system",
+            "رابطه خواب و سلامت متابولیک": "sleep metabolic health",
+            "تکنیک‌های کاهش استرس روزانه": "daily stress reduction techniques",
+            "تأثیر مدیتیشن بر فشار خون": "meditation blood pressure"
+        }
+        
+        # تبدیل موضوع به انگلیسی
+        english_topic = topic_translations.get(topic, topic)
+        
+        # جستجو در PubMed
+        pubmed_bot = PubMedBot()
+        articles = pubmed_bot.search_meta_analysis(english_topic)
+        
+        if articles:
+            # تولید محتوا بر اساس PubMed
+            content = pubmed_bot.generate_summary(topic, articles)
+            quality_score = 9
+            source = "PubMed Meta-Analysis"
+            print(f"   ✅ محتوای مبتنی بر PubMed تولید شد (کیفیت: {quality_score}/10)")
+        else:
+            # اگر PubMed نتونست، از محتوای تولیدی استفاده کن
+            content = self.generate_fallback_content(topic)
+            quality_score = 7
+            source = "AI Generated"
+            print(f"   ⚠️ از محتوای تولیدی استفاده شد (کیفیت: {quality_score}/10)")
+        
+        return {
+            "title": topic,
+            "content": content,
+            "category": self.detect_category(topic),
+            "word_count": len(content.split()) if content else 0,
+            "reading_time": f"{max(2, len(content) // 150)} دقیقه" if content else "۲ دقیقه",
+            "quality_score": quality_score,
+            "generated_at": datetime.now().isoformat(),
+            "status": "تولید شده",
+            "source": source
+        }
+    
+    def generate_fallback_content(self, topic):
+        """محتوای جایگزین وقتی PubMed جواب نده"""
+        # templates پیشرفته‌تر برای مواقع ضروری
         content_structures = {
             "دیابت": [
                 {
@@ -119,11 +181,7 @@ class AutoMedicalContentBot:
         }
         
         # تشخیص دسته‌بندی
-        category = "عمومی"
-        for cat, topics in self.AUTO_TOPICS.items():
-            if any(topic in t for t in topics):
-                category = cat
-                break
+        category = self.detect_category(topic)
         
         # تولید محتوای ساختاریافته
         if "دیابت" in category:
@@ -155,20 +213,18 @@ class AutoMedicalContentBot:
         
         content += random.choice(expert_tips)
         
-        return {
-            "title": topic,
-            "content": content,
-            "category": category,
-            "word_count": len(content.split()),
-            "reading_time": f"{max(2, len(content) // 150)} دقیقه",
-            "quality_score": random.randint(8, 10),  # افزایش کیفیت
-            "generated_at": datetime.now().isoformat(),
-            "status": "تولید شده"
-        }
+        return content
+    
+    def detect_category(self, topic):
+        """تشخیص دسته‌بندی موضوع"""
+        for category, topics in self.AUTO_TOPICS.items():
+            if topic in topics:
+                return category
+        return "عمومی"
     
     def auto_generate_daily_content(self):
         """تولید محتوای روزانه با کیفیت بالاتر"""
-        print("🚀 شروع تولید خودکار محتوای روزانه (نسخه پیشرفته)...")
+        print("🚀 شروع تولید خودکار محتوای روزانه (نسخه PubMed)...")
         print(f"🕒 زمان شروع: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         
         # انتخاب موضوعات روز
@@ -182,11 +238,118 @@ class AutoMedicalContentBot:
             article = self.generate_ai_content(topic)
             articles.append(article)
             
-            # تأخیر برای طبیعی‌تر شدن
-            time.sleep(3)
+            # تأخیر برای طبیعی‌تر شدن و رعایت محدودیت API
+            time.sleep(5)
             
-            print(f"   ✅ تولید شد: {article['title']} ({article['word_count']} کلمه - کیفیت: {article['quality_score']}/10)")
+            print(f"   ✅ تولید شد: {article['title']} ({article['word_count']} کلمه - کیفیت: {article['quality_score']}/10 - منبع: {article['source']})")
         
         return articles
     
-    # بقیه توابع مثل قبل...
+    def save_daily_report(self, articles):
+        """ذخیره گزارش روزانه"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"auto_articles_{timestamp}.json"
+        
+        report = {
+            "meta": {
+                "total_articles": len(articles),
+                "generation_date": datetime.now().isoformat(),
+                "average_quality": sum(a['quality_score'] for a in articles) / len(articles),
+                "total_words": sum(a['word_count'] for a in articles),
+                "sources": list(set(a['source'] for a in articles))
+            },
+            "articles": articles
+        }
+        
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(report, f, ensure_ascii=False, indent=2)
+        
+        return filename
+    
+    def show_daily_summary(self, articles):
+        """نمایش خلاصه روزانه"""
+        print("\n" + "="*60)
+        print("📊 خلاصه تولید روزانه")
+        print("="*60)
+        
+        total_words = sum(article['word_count'] for article in articles)
+        avg_quality = sum(article['quality_score'] for article in articles) / len(articles)
+        pubmed_count = sum(1 for article in articles if article['source'] == 'PubMed Meta-Analysis')
+        
+        print(f"📈 مقالات تولید شده: {len(articles)}")
+        print(f"🔬 مقالات مبتنی بر PubMed: {pubmed_count}")
+        print(f"📝 کل کلمات: {total_words}")
+        print(f"⭐ میانگین کیفیت: {avg_quality:.1f}/10")
+        print(f"⏱️ زمان مطالعه کل: {total_words // 150} دقیقه")
+        
+        print("\n📋 فهرست مقالات:")
+        for i, article in enumerate(articles, 1):
+            source_icon = "🔬" if article['source'] == 'PubMed Meta-Analysis' else "🤖"
+            print(f"   {i}. {source_icon} {article['title']} ({article['word_count']} کلمه - کیفیت: {article['quality_score']}/10)")
+
+def main():
+    print("="*70)
+    print("🤖 ربات تولید خودکار محتوای پزشکی - نسخه PubMed")
+    print("="*70)
+    
+    # ایجاد ربات
+    bot = AutoMedicalContentBot()
+    
+    # تولید خودکار محتوای روزانه
+    articles = bot.auto_generate_daily_content()
+    
+    if articles:
+        # 💾 ذخیره در دیتابیس
+        print("\n💾 در حال ذخیره در دیتابیس...")
+        try:
+            db = MedicalDatabase()
+            db.save_articles(articles)
+            print("✅ مقالات با موفقیت در دیتابیس ذخیره شد")
+        except Exception as e:
+            print(f"❌ خطا در ذخیره دیتابیس: {e}")
+        
+        # 🌐 ارسال به وبسایت
+        print("\n🌐 در حال ارسال به وبسایت...")
+        try:
+            website = WebsiteAutoPoster()
+            website_results = website.post_multiple_articles(articles)
+            
+            # نمایش نتایج ارسال
+            success_count = sum(1 for r in website_results if r['success'])
+            print(f"✅ {success_count}/{len(articles)} مقاله به وبسایت ارسال شد")
+        except Exception as e:
+            print(f"❌ خطا در ارسال به وبسایت: {e}")
+        
+        # 📊 تولید داشبورد
+        print("\n📊 در حال تولید داشبورد...")
+        try:
+            from dashboard import MedicalDashboard
+            dashboard = MedicalDashboard()
+            dashboard.generate_html_dashboard()
+            print("✅ داشبورد با موفقیت تولید شد")
+        except Exception as e:
+            print(f"❌ خطا در تولید داشبورد: {e}")
+        
+        # 📈 تولید گزارش هفتگی
+        print("\n📈 در حال تولید گزارش‌های آنالیز...")
+        try:
+            analytics = MedicalAnalytics()
+            weekly_report = analytics.generate_weekly_report()
+            if weekly_report:
+                print("✅ گزارش‌های آنالیز با موفقیت تولید شد")
+        except Exception as e:
+            print(f"❌ خطا در تولید گزارش‌های آنالیز: {e}")
+        
+        # 📄 ذخیره گزارش روزانه
+        filename = bot.save_daily_report(articles)
+        
+        # 📋 نمایش خلاصه
+        bot.show_daily_summary(articles)
+        
+        print(f"\n💾 گزارش ذخیره شد: {filename}")
+        print("🔄 اجرای بعدی: فردا همین زمان (خودکار)")
+    else:
+        print("❌ هیچ مقاله‌ای تولید نشد!")
+
+if __name__ == "__main__":
+    main()
