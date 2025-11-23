@@ -3,44 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <title>IRHealthLine - پایگاه تخصصی دانش پزشکی</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* استایل‌های موجود رو دست نزن */
-        
-        /* استایل دکمه جدید */
-        .ai-articles-btn {
-            display: block;
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
+            color: white;
+            padding: 50px 20px;
             text-align: center;
-            margin: 30px auto;
-            max-width: 400px;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        .ai-articles-btn {
+            text-align: center;
+            margin: 40px 0;
         }
         .ai-articles-link {
             display: inline-block;
             background: linear-gradient(135deg, #28a745, #20c997);
             color: white;
-            padding: 15px 30px;
-            border-radius: 10px;
+            padding: 18px 35px;
+            border-radius: 12px;
             text-decoration: none;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-            transition: transform 0.3s;
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+            transition: all 0.3s ease;
         }
         .ai-articles-link:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+            background: linear-gradient(135deg, #20c997, #28a745);
+        }
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .feature {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-right: 4px solid #2c5aa0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #666;
+            border-top: 1px solid #ddd;
         }
     </style>
 </head>
 <body>
-    <!-- محتوای موجود صفحه -->
-    
-    <!-- این خط رو در جای مناسب اضافه کن -->
-    <div class="ai-articles-btn">
-        <a href="medical-articles.html" class="ai-articles-link">
-            🏥 مشاهده مقالات تولید خودکار
-        </a>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 IRHealthLine</h1>
+            <p>پایگاه تخصصی دانش پزشکی ایران</p>
+        </div>
+
+        <div class="content">
+            <h2>به پایگاه تخصصی دانش پزشکی خوش آمدید</h2>
+            <p>منبعی معتبر برای جدیدترین مقالات و تحقیقات پزشکی</p>
+            
+            <!-- دکمه مقالات خودکار -->
+            <div class="ai-articles-btn">
+                <a href="medical-articles.html" class="ai-articles-link">
+                    🤖 مشاهده مقالات تولید خودکار هوش مصنوعی
+                </a>
+            </div>
+
+            <div class="features">
+                <div class="feature">
+                    <h3>📚 مقالات تخصصی</h3>
+                    <p>مجموعه‌ای از مقالات معتبر پزشکی</p>
+                </div>
+                <div class="feature">
+                    <h3>🔄 آپدیت روزانه</h3>
+                    <p>محتوای جدید هر روز به صورت خودکار</p>
+                </div>
+                <div class="feature">
+                    <h3>🎯 محتوای هوشمند</h3>
+                    <p>تولید شده توسط سیستم هوش مصنوعی</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2024 IRHealthLine - کلیه حقوق محفوظ است</p>
+        </div>
     </div>
-    
-    <!-- بقیه محتوای صفحه -->
 </body>
 </html>
