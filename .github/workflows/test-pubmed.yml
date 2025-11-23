@@ -1,0 +1,34 @@
+name: Test PubMed Connection
+
+on:
+  workflow_dispatch:  # امکان اجرای دستی
+  push:
+    branches: [ main ]
+    paths: [ 'test_pubmed.py', 'pubmed_bot.py' ]
+
+jobs:
+  test-pubmed:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        pip install requests
+        pip install lxml
+        
+    - name: Run PubMed Test
+      run: |
+        python test_pubmed.py
+      
+    - name: Show test results
+      run: |
+        echo "✅ تست PubMed کامل شد"
+        echo "📊 برای دیدن نتایج به لاگهای بالا مراجعه کنید"
